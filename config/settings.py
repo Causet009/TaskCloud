@@ -10,10 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+WALLET_DIR = BASE_DIR / "wallet"
+
+load_dotenv(BASE_DIR / ".env")
+
+
+def obtener_variable(nombre):
+    valor = os.getenv(nombre)
+
+    if not valor:
+        raise ValueError(
+            f"Falta configurar la variable {nombre} en el archivo .env"
+        )
+
+    return valor
 
 
 # Quick-start development settings - unsuitable for production
@@ -75,8 +92,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': obtener_variable('ORACLE_DSN'),
+        'USER': obtener_variable('ORACLE_USER'),
+        'PASSWORD': obtener_variable('ORACLE_PASSWORD'),
+        'OPTIONS': {
+            'config_dir': str(WALLET_DIR),
+            'wallet_location': str(WALLET_DIR),
+            'wallet_password': obtener_variable('ORACLE_WALLET_PASSWORD'),
+        },
     }
 }
 
