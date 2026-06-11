@@ -1,0 +1,230 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Panel de tareas | TaskCloud</title>
+
+  <link
+    rel="stylesheet"
+    href="{% static 'tareas/css/style.css' %}"
+  >
+</head>
+
+<body>
+
+  <header class="encabezado">
+    <h1 class="logo">
+      Task<span>Cloud</span>
+    </h1>
+
+    <nav>
+      <a href="{% url 'panel' %}">
+        Mis tareas
+      </a>
+
+      <a href="{% url 'cerrar_sesion' %}">
+        Cerrar sesión
+      </a>
+    </nav>
+  </header>
+
+  <main class="panel-principal">
+
+    <section class="bienvenida-panel">
+
+      <div>
+        <p class="etiqueta">
+          Panel personal
+        </p>
+
+        <h2>
+          Hola, {{ request.user.first_name|default:"Usuario" }}
+        </h2>
+
+        <p>
+          Organiza tus actividades y revisa tus tareas pendientes.
+        </p>
+      </div>
+
+      <div class="resumen-tareas">
+
+        <div>
+          <strong>{{ total }}</strong>
+          <span>Total</span>
+        </div>
+
+        <div>
+          <strong>{{ pendientes }}</strong>
+          <span>Pendientes</span>
+        </div>
+
+        <div>
+          <strong>{{ completadas }}</strong>
+          <span>Completadas</span>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="contenedor-panel">
+
+      <!-- FORMULARIO PARA CREAR TAREA -->
+      <div class="crear-tarea">
+
+        <h3>Crear nueva tarea</h3>
+
+        <form
+          id="formulario-tarea-django"
+          method="POST"
+          action="{% url 'panel' %}"
+        >
+          {% csrf_token %}
+
+          <div class="campo">
+            <label for="titulo-tarea">
+              Título
+            </label>
+
+            <input
+              type="text"
+              id="titulo-tarea"
+              name="titulo"
+              placeholder="Ejemplo: Estudiar para la evaluación"
+              maxlength="200"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="descripcion-tarea">
+              Descripción
+            </label>
+
+            <textarea
+              id="descripcion-tarea"
+              name="descripcion"
+              placeholder="Escribe una descripción de la tarea"
+              rows="4"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="boton">
+            Agregar tarea
+          </button>
+
+        </form>
+
+      </div>
+
+      <!-- LISTADO DE TAREAS -->
+      <div class="lista-tareas">
+
+        <div class="titulo-lista">
+          <h3>Mis tareas</h3>
+        </div>
+
+        <div id="contenedor-tareas">
+
+          {% for tarea in tareas %}
+
+            <article
+              class="item-tarea {% if tarea.completada %}completada{% endif %}"
+            >
+
+              <div class="informacion-tarea">
+
+                <input
+                  type="checkbox"
+                  {% if tarea.completada %}checked{% endif %}
+                  disabled
+                >
+
+                <div>
+                  <h4>
+                    {{ tarea.titulo }}
+                  </h4>
+
+                  <p>
+                    {{ tarea.descripcion|default:"Sin descripción." }}
+                  </p>
+                </div>
+
+              </div>
+
+              <div class="acciones-tarea">
+
+                <!-- COMPLETAR O MARCAR PENDIENTE -->
+                <form
+                  method="POST"
+                  action="{% url 'cambiar_estado_tarea' tarea.id %}"
+                >
+                  {% csrf_token %}
+
+                  <button
+                    type="submit"
+                    class="boton-editar"
+                  >
+                    {% if tarea.completada %}
+                      Marcar pendiente
+                    {% else %}
+                      Completar
+                    {% endif %}
+                  </button>
+                </form>
+
+                <!-- ELIMINAR TAREA -->
+                <form
+                  method="POST"
+                  action="{% url 'eliminar_tarea' tarea.id %}"
+                  onsubmit="return confirm('¿Seguro que deseas eliminar esta tarea?');"
+                >
+                  {% csrf_token %}
+
+                  <button
+                    type="submit"
+                    class="boton-eliminar"
+                  >
+                    Eliminar
+                  </button>
+                </form>
+
+              </div>
+
+            </article>
+
+          {% empty %}
+
+            <p class="mensaje-vacio">
+              Todavía no tienes tareas registradas.
+            </p>
+
+          {% endfor %}
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      TaskCloud — Proyecto de Arquitectura Multicloud
+    </p>
+  </footer>
+
+  <script src="{% static 'tareas/js/app.js' %}"></script>
+
+</body>
+</html>

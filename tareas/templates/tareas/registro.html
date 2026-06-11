@@ -1,0 +1,170 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Crear cuenta | TaskCloud</title>
+
+  <link
+    rel="stylesheet"
+    href="{% static 'tareas/css/style.css' %}"
+  >
+</head>
+
+<body>
+
+  <header class="encabezado">
+    <h1 class="logo">
+      Task<span>Cloud</span>
+    </h1>
+
+    <nav>
+      <a href="{% url 'inicio' %}">Inicio</a>
+
+      <a href="{% url 'inicio' %}#acceso">
+        Iniciar sesión
+      </a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="acceso">
+
+      <div class="contenedor-acceso">
+
+        <div class="informacion-acceso">
+          <p class="etiqueta">
+            Registro de usuario
+          </p>
+
+          <h2>Crea tu cuenta</h2>
+
+          <p>
+            Regístrate para comenzar a administrar
+            tus tareas personales.
+          </p>
+        </div>
+
+        <form
+          id="formulario-registro"
+          method="POST"
+          action="{% url 'registro' %}"
+        >
+          {% csrf_token %}
+
+          <div class="campo">
+            <label for="nombre">
+              Nombre completo
+            </label>
+
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              placeholder="Ingresa tu nombre"
+              autocomplete="name"
+              maxlength="150"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="correo-registro">
+              Correo electrónico
+            </label>
+
+            <input
+              type="email"
+              id="correo-registro"
+              name="correo"
+              placeholder="ejemplo@correo.cl"
+              autocomplete="email"
+              maxlength="254"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="password-registro">
+              Contraseña
+            </label>
+
+            <input
+              type="password"
+              id="password-registro"
+              name="password"
+              placeholder="Mínimo 8 caracteres"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="confirmar-password">
+              Confirmar contraseña
+            </label>
+
+            <input
+              type="password"
+              id="confirmar-password"
+              name="confirmar_password"
+              placeholder="Repite tu contraseña"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+          </div>
+
+          <button type="submit" class="boton">
+            Crear cuenta
+          </button>
+
+          {% if mensaje %}
+  {% if registro_exitoso %}
+    <p id="mensaje-registro" class="mensaje-exito">
+      {{ mensaje }}
+    </p>
+  {% else %}
+    <p id="mensaje-registro" class="mensaje-error">
+      {{ mensaje }}
+    </p>
+  {% endif %}
+{% else %}
+  <p id="mensaje-registro"></p>
+{% endif %}
+
+          <p class="texto-registro">
+            ¿Ya tienes una cuenta?
+
+            <a href="{% url 'inicio' %}#acceso">
+              Iniciar sesión
+            </a>
+          </p>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      TaskCloud — Proyecto de Arquitectura Multicloud
+    </p>
+  </footer>
+
+  <script src="{% static 'tareas/js/app.js' %}"></script>
+
+</body>
+</html>

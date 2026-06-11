@@ -1,0 +1,230 @@
+django
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>TaskCloud | Gestor de tareas</title>
+
+  <link
+    rel="stylesheet"
+    href="{% static 'tareas/css/style.css' %}"
+  >
+</head>
+
+<body>
+
+  <header class="encabezado">
+    <h1 class="logo">
+      Task<span>Cloud</span>
+    </h1>
+
+    <nav>
+      <a href="#inicio">Inicio</a>
+      <a href="#funciones">Funciones</a>
+      <a href="#acceso">Ingresar</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- INICIO -->
+    <section class="inicio" id="inicio">
+
+      <div class="contenido-inicio">
+        <p class="etiqueta">
+          Gestor personal de tareas
+        </p>
+
+        <h2>
+          Organiza tus actividades de manera fácil y segura
+        </h2>
+
+        <p>
+          TaskCloud permite registrar, administrar y completar
+          tus tareas desde cualquier lugar.
+        </p>
+
+        <a href="#acceso" class="boton">
+          Comenzar ahora
+        </a>
+      </div>
+
+      <div class="panel-ejemplo">
+
+        <div class="panel-titulo">
+          <div>
+            <p>Mis tareas</p>
+            <h3>Panel personal</h3>
+          </div>
+
+          <span>Activo</span>
+        </div>
+
+        <div class="tarea">
+          <input type="checkbox" checked disabled>
+
+          <div>
+            <h4>Diseñar la página web</h4>
+            <p>Tarea completada</p>
+          </div>
+        </div>
+
+        <div class="tarea">
+          <input type="checkbox" disabled>
+
+          <div>
+            <h4>Conectar Oracle Database</h4>
+            <p>Tarea pendiente</p>
+          </div>
+        </div>
+
+        <div class="tarea">
+          <input type="checkbox" disabled>
+
+          <div>
+            <h4>Desplegar en AWS EC2</h4>
+            <p>Tarea pendiente</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- FUNCIONES -->
+    <section class="funciones" id="funciones">
+
+      <h2>Funciones principales</h2>
+
+      <div class="contenedor-funciones">
+
+        <article class="tarjeta">
+          <h3>Crear tareas</h3>
+
+          <p>
+            Registra actividades importantes y organiza mejor
+            tu tiempo.
+          </p>
+        </article>
+
+        <article class="tarjeta">
+          <h3>Administrar tareas</h3>
+
+          <p>
+            Completa o elimina las tareas registradas.
+          </p>
+        </article>
+
+        <article class="tarjeta">
+          <h3>Acceso seguro</h3>
+
+          <p>
+            Cada usuario tiene una cuenta protegida
+            mediante contraseña.
+          </p>
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- INICIO DE SESIÓN -->
+    <section class="acceso" id="acceso">
+
+      <div class="contenedor-acceso">
+
+        <div class="informacion-acceso">
+          <p class="etiqueta">
+            Acceso personal
+          </p>
+
+          <h2>Inicia sesión</h2>
+
+          <p>
+            Ingresa tus datos para acceder a tu panel de tareas.
+          </p>
+        </div>
+
+        <form
+          id="formulario-login"
+          method="POST"
+          action="{% url 'inicio' %}"
+        >
+          {% csrf_token %}
+
+          <div class="campo">
+            <label for="correo">
+              Correo electrónico
+            </label>
+
+            <input
+              type="email"
+              id="correo"
+              name="correo"
+              placeholder="ejemplo@correo.cl"
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="password">
+              Contraseña
+            </label>
+
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Ingresa tu contraseña"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <button type="submit" class="boton">
+            Iniciar sesión
+          </button>
+
+          {% if mensaje_login %}
+            <p id="mensaje" class="mensaje-error">
+              {{ mensaje_login }}
+            </p>
+          {% else %}
+            <p id="mensaje"></p>
+          {% endif %}
+
+          <p class="texto-registro">
+            ¿No tienes una cuenta?
+
+            <a href="{% url 'registro' %}">
+              Crear cuenta
+            </a>
+          </p>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      TaskCloud — Proyecto de Arquitectura Multicloud
+    </p>
+  </footer>
+
+  <script src="{% static 'tareas/js/app.js' %}"></script>
+
+</body>
+</html>
