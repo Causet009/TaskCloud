@@ -1,4 +1,4 @@
-```python
+
 """
 Django settings for config project.
 
@@ -163,4 +163,3 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Tipo de clave primaria predeterminada
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-```
