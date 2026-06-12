@@ -1,0 +1,81 @@
+name: Deploy TaskCloud to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+concurrency:
+  group: taskcloud-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Desplegar TaskCloud en EC2
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          command_timeout: 15m
+
+          script: |
+            set -e
+
+            export PATH="/usr/libexec/git-core:$PATH"
+
+            cd /home/ec2-user/TaskCloud
+
+            echo "Comprobando archivos privados..."
+
+            if [ ! -f ".env" ]; then
+              echo "ERROR: No existe el archivo .env"
+              exit 1
+            fi
+
+            if [ ! -d "wallet" ]; then
+              echo "ERROR: No existe la carpeta wallet"
+              exit 1
+            fi
+
+            echo "Descargando la última versión desde GitHub..."
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "Activando entorno virtual..."
+
+            source venv/bin/activate
+
+            echo "Instalando dependencias..."
+
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+            echo "Comprobando Django..."
+
+            python manage.py check
+
+            echo "Aplicando migraciones..."
+
+            python manage.py migrate --noinput
+
+            echo "Recopilando archivos estáticos..."
+
+            python manage.py collectstatic --noinput
+
+            echo "Reiniciando servicios..."
+
+            sudo systemctl restart gunicorn
+            sudo systemctl reload nginx
+
+            sudo systemctl is-active --quiet gunicorn
+            sudo systemctl is-active --quiet nginx
+
+            echo "Despliegue completado correctamente"
