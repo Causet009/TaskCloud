@@ -515,3 +515,36 @@ footer {
 .mensaje-error {
   color: #dc2626;
 }
+.archivo-tarea {
+  margin-top: 10px;
+}
+
+.archivo-tarea a {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #e8f0ff;
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.archivo-tarea a:hover {
+  background-color: #dbeafe;
+}
+
+.campo small {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+input[type="file"] {
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 100%;
+}

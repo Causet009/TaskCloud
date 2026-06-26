@@ -1,4 +1,3 @@
-
 from django.contrib.auth import (
     authenticate,
     get_user_model,
@@ -8,6 +7,7 @@ from django.contrib.auth import (
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import TareaForm
 from .models import Tarea
 
 User = get_user_model()
@@ -104,20 +104,19 @@ def registro(request):
 @login_required(login_url="inicio")
 def panel(request):
     if request.method == "POST":
-        titulo = request.POST.get("titulo", "").strip()
-        descripcion = request.POST.get(
-            "descripcion",
-            "",
-        ).strip()
+        form = TareaForm(
+            request.POST,
+            request.FILES,
+        )
 
-        if titulo:
-            Tarea.objects.create(
-                usuario=request.user,
-                titulo=titulo,
-                descripcion=descripcion,
-            )
+        if form.is_valid():
+            tarea = form.save(commit=False)
+            tarea.usuario = request.user
+            tarea.save()
 
         return redirect("panel")
+
+    form = TareaForm()
 
     tareas = Tarea.objects.filter(
         usuario=request.user
@@ -128,6 +127,7 @@ def panel(request):
     pendientes = total - completadas
 
     contexto = {
+        "form": form,
         "tareas": tareas,
         "total": total,
         "completadas": completadas,
@@ -144,6 +144,8 @@ def panel(request):
 def cerrar_sesion(request):
     logout(request)
     return redirect("inicio")
+
+
 @login_required(login_url="inicio")
 def cambiar_estado_tarea(request, tarea_id):
     if request.method == "POST":
@@ -170,6 +172,9 @@ def eliminar_tarea(request, tarea_id):
             id=tarea_id,
             usuario=request.user,
         )
+
+        if tarea.archivo:
+            tarea.archivo.delete(save=False)
 
         tarea.delete()
 

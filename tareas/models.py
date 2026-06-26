@@ -17,6 +17,12 @@ class Tarea(models.Model):
         blank=True,
     )
 
+    archivo = models.FileField(
+        upload_to="tareas/",
+        blank=True,
+        null=True,
+    )
+
     completada = models.BooleanField(
         default=False,
     )

@@ -1,4 +1,3 @@
-
 {% load static %}
 
 <!DOCTYPE html>
@@ -51,7 +50,7 @@
         </h2>
 
         <p>
-          Organiza tus actividades y revisa tus tareas pendientes.
+          Organiza tus actividades, adjunta archivos y revisa tus tareas pendientes.
         </p>
       </div>
 
@@ -87,6 +86,7 @@
           id="formulario-tarea-django"
           method="POST"
           action="{% url 'panel' %}"
+          enctype="multipart/form-data"
         >
           {% csrf_token %}
 
@@ -115,7 +115,25 @@
               name="descripcion"
               placeholder="Escribe una descripción de la tarea"
               rows="4"
+              maxlength="500"
             ></textarea>
+          </div>
+
+          <div class="campo">
+            <label for="archivo-tarea">
+              Imagen o archivo
+            </label>
+
+            <input
+              type="file"
+              id="archivo-tarea"
+              name="archivo"
+              accept="image/*,.pdf,.doc,.docx"
+            >
+
+            <small>
+              El archivo se almacenará en Azure Blob Storage.
+            </small>
           </div>
 
           <button type="submit" class="boton">
@@ -157,6 +175,18 @@
                   <p>
                     {{ tarea.descripcion|default:"Sin descripción." }}
                   </p>
+
+                  {% if tarea.archivo %}
+                    <div class="archivo-tarea">
+                      <a
+                        href="{{ tarea.archivo.url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Ver archivo adjunto
+                      </a>
+                    </div>
+                  {% endif %}
                 </div>
 
               </div>
@@ -186,7 +216,7 @@
                 <form
                   method="POST"
                   action="{% url 'eliminar_tarea' tarea.id %}"
-                  onsubmit="return confirm('¿Seguro que deseas eliminar esta tarea?');"
+                  onsubmit="return confirm('¿Seguro que deseas eliminar esta tarea y su archivo adjunto?');"
                 >
                   {% csrf_token %}
 
