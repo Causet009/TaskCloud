@@ -52,7 +52,7 @@ jobs:
 
             echo "Configurando variables de Azure en .env..."
 
-            python - <<'PY'
+            python3 - <<'PY'
             import os
             from pathlib import Path
 
