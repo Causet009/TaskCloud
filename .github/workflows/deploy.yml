@@ -15,6 +15,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AZURE_ACCOUNT_NAME: taskcloudnico2026
+      AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
+      AZURE_CONTAINER: media
+
     steps:
       - name: Desplegar TaskCloud en EC2
         uses: appleboy/ssh-action@v1.2.5
@@ -24,6 +29,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: 22
           command_timeout: 15m
+          envs: AZURE_ACCOUNT_NAME,AZURE_ACCOUNT_KEY,AZURE_CONTAINER
 
           script: |
             set -e
@@ -43,6 +49,37 @@ jobs:
               echo "ERROR: No existe la carpeta wallet"
               exit 1
             fi
+
+            echo "Configurando variables de Azure en .env..."
+
+            python - <<'PY'
+            import os
+            from pathlib import Path
+
+            env_path = Path(".env")
+
+            nuevas_variables = {
+                "AZURE_ACCOUNT_NAME": os.environ.get("AZURE_ACCOUNT_NAME", ""),
+                "AZURE_ACCOUNT_KEY": os.environ.get("AZURE_ACCOUNT_KEY", ""),
+                "AZURE_CONTAINER": os.environ.get("AZURE_CONTAINER", "media"),
+            }
+
+            for clave, valor in nuevas_variables.items():
+                if not valor:
+                    raise SystemExit(f"Falta configurar {clave}")
+
+            lineas = env_path.read_text().splitlines()
+
+            lineas_filtradas = []
+            for linea in lineas:
+                if not any(linea.startswith(clave + "=") for clave in nuevas_variables):
+                    lineas_filtradas.append(linea)
+
+            for clave, valor in nuevas_variables.items():
+                lineas_filtradas.append(f"{clave}={valor}")
+
+            env_path.write_text("\n".join(lineas_filtradas) + "\n")
+            PY
 
             echo "Descargando la última versión desde GitHub..."
 
