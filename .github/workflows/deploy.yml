@@ -19,6 +19,7 @@ jobs:
       AZURE_ACCOUNT_NAME: taskcloudnico2026
       AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
       AZURE_CONTAINER: media
+      APP_ALLOWED_HOSTS: ${{ secrets.HOST }},localhost,127.0.0.1
 
     steps:
       - name: Desplegar TaskCloud en EC2
@@ -29,7 +30,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: 22
           command_timeout: 15m
-          envs: AZURE_ACCOUNT_NAME,AZURE_ACCOUNT_KEY,AZURE_CONTAINER
+          envs: AZURE_ACCOUNT_NAME,AZURE_ACCOUNT_KEY,AZURE_CONTAINER,APP_ALLOWED_HOSTS
 
           script: |
             set -e
@@ -50,7 +51,7 @@ jobs:
               exit 1
             fi
 
-            echo "Configurando variables de Azure en .env..."
+            echo "Configurando variables en .env..."
 
             python3 - <<'PY'
             import os
@@ -62,6 +63,7 @@ jobs:
                 "AZURE_ACCOUNT_NAME": os.environ.get("AZURE_ACCOUNT_NAME", ""),
                 "AZURE_ACCOUNT_KEY": os.environ.get("AZURE_ACCOUNT_KEY", ""),
                 "AZURE_CONTAINER": os.environ.get("AZURE_CONTAINER", "media"),
+                "ALLOWED_HOSTS": os.environ.get("APP_ALLOWED_HOSTS", ""),
             }
 
             for clave, valor in nuevas_variables.items():
